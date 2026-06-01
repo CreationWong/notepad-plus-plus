@@ -31,7 +31,7 @@ REM files to be signed
 
 set nppBinaries=..\bin\notepad++.exe ..\bin64\notepad++.exe ..\binarm64\notepad++.exe
 
-set componentsBinaries=..\bin\plugins\Config\nppPluginList.dll ..\bin64\plugins\Config\nppPluginList.dll ..\binarm64\plugins\Config\nppPluginList.dll ..\bin\updater\GUP.exe ..\bin64\updater\GUP.exe ..\binarm64\updater\GUP.exe
+set componentsBinaries=..\bin\plugins\Config\nppPluginList.dll ..\bin64\plugins\Config\nppPluginList.dll ..\binarm64\plugins\Config\nppPluginList.dll
 
 set pluginBinaries=..\bin\plugins\NppExport\NppExport.dll ..\bin64\plugins\NppExport\NppExport.dll ..\binarm64\plugins\NppExport\NppExport.dll ..\bin\plugins\mimeTools\mimeTools.dll ..\bin64\plugins\mimeTools\mimeTools.dll ..\binarm64\plugins\mimeTools\mimeTools.dll ..\bin\plugins\NppConverter\NppConverter.dll ..\bin64\plugins\NppConverter\NppConverter.dll ..\binarm64\plugins\NppConverter\NppConverter.dll
 
@@ -148,7 +148,6 @@ rmdir /S /Q .\zipped.package.release
 
 rem Re-build Notepad++ 32-bit package folders
 mkdir .\zipped.package.release
-mkdir .\zipped.package.release\updater
 mkdir .\zipped.package.release\localization
 mkdir .\zipped.package.release\themes
 mkdir .\zipped.package.release\autoCompletion
@@ -167,7 +166,6 @@ rmdir /S /Q .\zipped.package.release64
 
 rem Re-build Notepad++ 64-bit package folders
 mkdir .\zipped.package.release64
-mkdir .\zipped.package.release64\updater
 mkdir .\zipped.package.release64\localization
 mkdir .\zipped.package.release64\themes
 mkdir .\zipped.package.release64\autoCompletion
@@ -186,7 +184,6 @@ rmdir /S /Q .\zipped.package.releaseArm64
 
 rem Re-build Notepad++ ARM64-bit package folders
 mkdir .\zipped.package.releaseArm64
-mkdir .\zipped.package.releaseArm64\updater
 mkdir .\zipped.package.releaseArm64\localization
 mkdir .\zipped.package.releaseArm64\themes
 mkdir .\zipped.package.releaseArm64\autoCompletion
@@ -335,52 +332,16 @@ If ErrorLevel 1 goto End
 copy /Y ".\themes\*.xml" .\zipped.package.releaseArm64\themes\
 If ErrorLevel 1 goto End
 
-rem Use Plugins Admin but disable auto-update for x86 portable package
-copy /Y .\xml4Config\disableNppAutoUpdate.xml .\zipped.package.release\
-If ErrorLevel 1 goto End
+rem Bundle Plugins Admin metadata for x86 portable package
 copy /Y ..\bin\plugins\Config\nppPluginList.dll .\zipped.package.release\plugins\Config\
 If ErrorLevel 1 goto End
-copy /Y ..\bin\updater\GUP.exe .\zipped.package.release\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\bin\updater\gup.xml .\zipped.package.release\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\bin\updater\LICENSE .\zipped.package.release\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\bin\updater\README.md .\zipped.package.release\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\bin\updater\updater.ico .\zipped.package.release\updater\
-If ErrorLevel 1 goto End
 
-rem Use Plugins Admin but disable auto-update for x64 portable package
-copy /Y .\xml4Config\disableNppAutoUpdate.xml .\zipped.package.release64\
-If ErrorLevel 1 goto End
+rem Bundle Plugins Admin metadata for x64 portable package
 copy /Y ..\bin64\plugins\Config\nppPluginList.dll .\zipped.package.release64\plugins\Config\
 If ErrorLevel 1 goto End
-copy /Y ..\bin64\updater\GUP.exe .\zipped.package.release64\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\bin64\updater\gup.xml .\zipped.package.release64\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\bin64\updater\LICENSE .\zipped.package.release64\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\bin64\updater\README.md .\zipped.package.release64\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\bin64\updater\updater.ico .\zipped.package.release64\updater\
-If ErrorLevel 1 goto End
 
-rem Use Plugins Admin but disable auto-update for ARM64 portable package
-copy /Y .\xml4Config\disableNppAutoUpdate.xml .\zipped.package.releaseArm64\
-If ErrorLevel 1 goto End
+rem Bundle Plugins Admin metadata for ARM64 portable package
 copy /Y ..\binarm64\plugins\Config\nppPluginList.dll .\zipped.package.releaseArm64\plugins\Config\
-If ErrorLevel 1 goto End
-copy /Y ..\binarm64\updater\GUP.exe .\zipped.package.releaseArm64\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\binarm64\updater\gup.xml .\zipped.package.releaseArm64\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\binarm64\updater\LICENSE .\zipped.package.releaseArm64\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\binarm64\updater\README.md .\zipped.package.releaseArm64\updater\
-If ErrorLevel 1 goto End
-copy /Y ..\binarm64\updater\updater.ico .\zipped.package.releaseArm64\updater\
 If ErrorLevel 1 goto End
 
 

@@ -181,8 +181,6 @@ protected:
 	intptr_t CALLBACK run_dlgProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 
 private :
-	std::wstring _updaterDir;
-	std::wstring _updaterFullPath;
 	std::wstring _pluginListFullPath;
 
 	TabBar _tab;

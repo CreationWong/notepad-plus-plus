@@ -506,17 +506,6 @@ LRESULT Notepad_plus::init(HWND hwnd)
 		::InsertMenu(hRunMenu, runPosBase - 1, MF_BYPOSITION, static_cast<UINT>(-1), 0);
 
 	runMenuItems.attach(hRunMenu, runPosBase, IDM_SETTING_SHORTCUT_MAPPER_RUN, L"Modify Shortcut/Delete Command...");
-
-	// Updater menu item
-	if (!nppGUI._doesExistUpdater || nppParam.isNppAutoUpdateDisabled())
-	{
-		::DeleteMenu(_mainMenuHandle, IDM_UPDATE_NPP, MF_BYCOMMAND);
-		::DeleteMenu(_mainMenuHandle, IDM_CONFUPDATERPROXY, MF_BYCOMMAND);
-		HMENU hHelpMenu = ::GetSubMenu(_mainMenuHandle, MENUINDEX_HELP);
-		if (hHelpMenu)
-			::DeleteMenu(hHelpMenu, 7, MF_BYPOSITION); // SEPARATOR
-		::DrawMenuBar(hwnd);
-	}
 	//Languages Menu
 	HMENU hLangMenu = ::GetSubMenu(_mainMenuHandle, MENUINDEX_LANGUAGE);
 

@@ -259,13 +259,7 @@ vector<PluginUpdateInfo*> PluginViewList::fromUiIndexesToPluginInfos(const std::
 
 PluginsAdminDlg::PluginsAdminDlg()
 {
-	// Get wingup path
 	NppParameters& nppParameters = NppParameters::getInstance();
-	_updaterDir = nppParameters.getNppPath();
-	pathAppend(_updaterDir, L"updater");
-	_updaterFullPath = _updaterDir;
-	pathAppend(_updaterFullPath, L"gup.exe");
-
 	// get plugin-list path
 	_pluginListFullPath = nppParameters.getPluginConfDir();
 
@@ -284,97 +278,16 @@ wstring PluginsAdminDlg::getPluginListVerStr() const
 	return v.toString();
 }
 
-bool PluginsAdminDlg::exitToInstallRemovePlugins(Operation op, const vector<PluginUpdateInfo*>& puis)
+bool PluginsAdminDlg::exitToInstallRemovePlugins(Operation, const vector<PluginUpdateInfo*>&)
 {
-	wstring opStr;
-	if (op == pa_install)
-		opStr = L"-unzipTo ";
-	else if (op == pa_update)
-		opStr = L"-unzipTo -clean ";
-	else if (op == pa_remove)
-		opStr = L"-clean ";
-	else
-		return false;
-
 	NppParameters& nppParameters = NppParameters::getInstance();
-	wstring updaterDir = nppParameters.getNppPath();
-	updaterDir += L"\\updater\\";
-
-	wstring updaterFullPath = updaterDir + L"gup.exe";
-
-	wstring updaterParams = opStr;
-
-	wchar_t nppFullPath[MAX_PATH]{};
-	::GetModuleFileName(NULL, nppFullPath, MAX_PATH);
-	updaterParams += L"\"";
-	updaterParams += nppFullPath;
-	updaterParams += L"\" ";
-
-	updaterParams += L"\"";
-	updaterParams += nppParameters.getPluginRootDir();
-	updaterParams += L"\"";
-
-	for (const auto &i : puis)
-	{
-		if (op == pa_install || op == pa_update)
-		{
-			// add folder to operate
-			updaterParams += L" \"";
-			updaterParams += i->_folderName;
-			updaterParams += L" ";
-			updaterParams += i->_repository;
-			updaterParams += L" ";
-			updaterParams += i->_id;
-			updaterParams += L"\"";
-		}
-		else // op == pa_remove
-		{
-			// add folder to operate
-			updaterParams += L" \"";
-			wstring folderName = i->_folderName;
-			if (folderName.empty())
-			{
-				auto lastindex = i->_displayName.find_last_of(L".");
-				if (lastindex != wstring::npos)
-					folderName = i->_displayName.substr(0, lastindex);
-				else
-					folderName = i->_displayName;	// This case will never occur, but in case if it occurs too
-													// just putting the plugin name, so that whole plugin system is not screewed.
-			}
-			updaterParams += folderName;
-			updaterParams += L"\"";
-		}
-	}
-
-	// Ask user's confirmation
 	NativeLangSpeaker *pNativeSpeaker = nppParameters.getNativeLangSpeaker();
-	auto res = pNativeSpeaker->messageBox("ExitToUpdatePlugins",
+	pNativeSpeaker->messageBox("PluginAdminWithoutUpdater",
 		_hSelf,
-		L"If you click YES, you will quit Notepad++ to continue the operations.\nNotepad++ will be restarted after all the operations are terminated.\nContinue?",
-		L"Notepad++ is about to exit",
-		MB_YESNO | MB_APPLMODAL);
-
-	if (res == IDYES)
-	{
-		NppParameters& nppParam = NppParameters::getInstance();
-
-		// gup path: makes trigger ready
-		nppParam.setWingupFullPath(updaterFullPath);
-
-		// op: -clean or "-clean -unzip"
-		// application path: Notepad++ path to be relaunched
-		// plugin global path
-		// plugin names or "plugin names + download url"
-		nppParam.setWingupParams(updaterParams);
-
-		// gup folder path
-		nppParam.setWingupDir(updaterDir);
-
-		// Quite Notepad++ so just before quitting Notepad++ launches gup with needed arguments  
-		::PostMessage(_hParent, WM_COMMAND, IDM_FILE_EXIT, 0);
-	}
-
-	return true;
+		L"Plugin install, update, and remove operations are unavailable because external updater support has been removed from this build.",
+		L"Plugins Admin",
+		MB_OK | MB_APPLMODAL);
+	return false;
 }
 
 bool PluginsAdminDlg::installPlugins()
@@ -657,19 +570,7 @@ PluginUpdateInfo::PluginUpdateInfo(const std::wstring& fullFilePath, const std::
 
 bool PluginsAdminDlg::initFromJson()
 {
-	// GUP.exe doesn't work under XP
-	winVer winVersion = (NppParameters::getInstance()).getWinVersion();
-	if (winVersion <= WV_XP)
-	{
-		return false;
-	}
-
 	if (!doesFileExist(_pluginListFullPath.c_str()))
-	{
-		return false;
-	}
-
-	if (!doesFileExist(_updaterFullPath.c_str()))
 	{
 		return false;
 	}
@@ -696,47 +597,42 @@ bool PluginsAdminDlg::initFromJson()
 	if (!isSecured)
 		return false;
 
-	isSecured = securityGuard.checkModule(_updaterFullPath, nm_gup);
+	HMODULE hLib = NULL;
+	hLib = ::LoadLibraryEx(_pluginListFullPath.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE);
 
-	if (isSecured)
+	if (!hLib)
 	{
-		HMODULE hLib = NULL;
-		hLib = ::LoadLibraryEx(_pluginListFullPath.c_str(), 0, LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE);
-
-		if (!hLib)
-		{
-			// Error treatment
-			//printStr(L"LoadLibrary PB!!!");
-			return false;
-		}
-
-		HRSRC rc = ::FindResource(hLib, MAKEINTRESOURCE(IDR_PLUGINLISTJSONFILE), MAKEINTRESOURCE(TEXTFILE));
-		if (!rc)
-		{
-			::FreeLibrary(hLib);
-			return false;
-		}
-
-		HGLOBAL rcData = ::LoadResource(hLib, rc);
-		if (!rcData)
-		{
-			::FreeLibrary(hLib);
-			return false;
-		}
-
-		auto size = ::SizeofResource(hLib, rc);
-		auto data = static_cast<const char*>(::LockResource(rcData));
-
-		char* buffer = new char[size + 1];
-		::memcpy(buffer, data, size);
-		buffer[size] = '\0';
-
-		j = j.parse(buffer);
-
-		delete[] buffer;
-
-		::FreeLibrary(hLib);
+		// Error treatment
+		//printStr(L"LoadLibrary PB!!!");
+		return false;
 	}
+
+	HRSRC rc = ::FindResource(hLib, MAKEINTRESOURCE(IDR_PLUGINLISTJSONFILE), MAKEINTRESOURCE(TEXTFILE));
+	if (!rc)
+	{
+		::FreeLibrary(hLib);
+		return false;
+	}
+
+	HGLOBAL rcData = ::LoadResource(hLib, rc);
+	if (!rcData)
+	{
+		::FreeLibrary(hLib);
+		return false;
+	}
+
+	auto size = ::SizeofResource(hLib, rc);
+	auto data = static_cast<const char*>(::LockResource(rcData));
+
+	char* buffer = new char[size + 1];
+	::memcpy(buffer, data, size);
+	buffer[size] = '\0';
+
+	j = j.parse(buffer);
+
+	delete[] buffer;
+
+	::FreeLibrary(hLib);
 #endif
 
 	

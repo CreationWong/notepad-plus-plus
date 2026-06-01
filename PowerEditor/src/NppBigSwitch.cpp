@@ -2811,16 +2811,6 @@ LRESULT Notepad_plus::process(HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 
 				//Sends WM_DESTROY, Notepad++ will end
 				::DestroyWindow(hwnd);
-
-				if (!nppParam.isEndSessionCritical())
-				{
-					wstring updaterFullPath = nppParam.getWingupFullPath();
-					if (!updaterFullPath.empty())
-					{
-						Process updater(updaterFullPath.c_str(), nppParam.getWingupParams().c_str(), nppParam.getWingupDir().c_str());
-						updater.run(nppParam.shouldDoUAC());
-					}
-				}
 			}
 
 			return 0; // both WM_CLOSE and a possible WM_ENDSESSION should return 0

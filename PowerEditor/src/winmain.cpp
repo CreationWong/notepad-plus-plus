@@ -35,11 +35,9 @@
 #include "NppConstants.h"
 #include "NppDarkMode.h"
 #include "Parameters.h"
-#include "Processus.h"
 #include "Win32Exception.h" //Win32 exception
 #include "dpiManagerV2.h"
 #include "resource.h"
-#include "verifySignedfile.h"
 
 typedef std::vector<std::wstring> ParamVector;
 
@@ -395,30 +393,6 @@ void stripIgnoredParams(ParamVector & params)
 	}
 }
 
-bool launchUpdater(const std::wstring& updaterFullPath, const std::wstring& updaterDir)
-{
-	NppParameters& nppParameters = NppParameters::getInstance();
-	NppGUI& nppGui = nppParameters.getNppGUI();
-
-	// check if update interval elapsed
-	Date today(0);
-	if (today < nppGui._autoUpdateOpt._nextUpdateDate)
-		return false;
-
-	std::wstring updaterParams;
-	nppParameters.buildGupParams(updaterParams);
-
-	Process updater(updaterFullPath.c_str(), updaterParams.c_str(), updaterDir.c_str());
-	updater.run();
-
-	// Update next update date
-	if (nppGui._autoUpdateOpt._intervalDays < 0) // Make sure interval days value is positive
-		nppGui._autoUpdateOpt._intervalDays = 0 - nppGui._autoUpdateOpt._intervalDays;
-	nppGui._autoUpdateOpt._nextUpdateDate = Date(nppGui._autoUpdateOpt._intervalDays);
-
-	return true;
-}
-
 DWORD nppUacSave(const wchar_t* wszTempFilePath, const wchar_t* wszProtectedFilePath2Save)
 {
 	if ((lstrlenW(wszTempFilePath) == 0) || (lstrlenW(wszProtectedFilePath2Save) == 0)) // safe check (lstrlen returns 0 for possible nullptr)
@@ -675,18 +649,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstance
 	nppParameters.load();
 
 	NppGUI & nppGui = nppParameters.getNppGUI();
+	nppGui._autoUpdateOpt._doAutoUpdate = NppGUI::autoupdate_disabled;
 
 	NppDarkMode::initDarkMode();
 	DPIManagerV2::initDpiAPI();
 
-	bool doUpdateNpp = nppGui._autoUpdateOpt._doAutoUpdate != NppGUI::autoupdate_disabled;
-	bool updateAtExit = nppGui._autoUpdateOpt._doAutoUpdate == NppGUI::autoupdate_on_exit;
-	bool doUpdatePluginList = nppGui._autoUpdateOpt._doAutoUpdate != NppGUI::autoupdate_disabled;
-
 	if (doFunctionListExport || doPrintAndQuit) // export functionlist feature will serialize functionlist on the disk, then exit Notepad++. So it's important to not launch into existing instance, and keep it silent.
 	{
 		isMultiInst = true;
-		doUpdateNpp = doUpdatePluginList = false;
 		cmdLineParams._isNoSession = true;
 	}
 
@@ -791,25 +761,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstance
 
 	auto upNotepadWindow = std::make_unique<Notepad_plus_Window>();
 	Notepad_plus_Window & notepad_plus_plus = *upNotepadWindow.get();
-
-	std::wstring updaterDir = nppParameters.getNppPath();
-	updaterDir += L"\\updater\\";
-
-	std::wstring updaterFullPath = updaterDir + L"gup.exe";
-
-	bool isUpExist = nppGui._doesExistUpdater = doesFileExist(updaterFullPath.c_str());
-
-	// wingup doesn't work with the obsolete security layer (API) under xp since downloads are secured with SSL on notepad-plus-plus.org
 	winVer ver = nppParameters.getWinVersion();
-	bool isGtXP = ver > WV_XP;
-
-	SecurityGuard securityGuard;
-	bool isSignatureOK = securityGuard.checkModule(updaterFullPath, nm_gup);
-
-	if (TheFirstOne && isUpExist && isGtXP && isSignatureOK && doUpdateNpp && !updateAtExit && !nppParameters.isNppAutoUpdateDisabled())
-	{
-		launchUpdater(updaterFullPath, updaterDir);
-	}
 
 	MSG msg{};
 	msg.wParam = 0;
@@ -875,18 +827,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE /*hPrevInstance
 		isException = true;
 		::MessageBoxA(Notepad_plus_Window::gNppHWND, "An exception that we did not yet found its name is just caught", "Unknown Exception", MB_OK);
 		doException(notepad_plus_plus);
-	}
-
-	doUpdateNpp = nppGui._autoUpdateOpt._doAutoUpdate != NppGUI::autoupdate_disabled; // refresh, maybe user activated these opts in Preferences
-	updateAtExit = nppGui._autoUpdateOpt._doAutoUpdate == NppGUI::autoupdate_on_exit; // refresh
-	if (!isException && !nppParameters.isEndSessionCritical() && TheFirstOne && isUpExist && isGtXP && isSignatureOK && doUpdateNpp && updateAtExit)
-	{
-		if (launchUpdater(updaterFullPath, updaterDir))
-		{
-			// for updating the nextUpdateDate in the already saved config.xml
-			nppParameters.createXmlTreeFromGUIParams();
-			nppParameters.saveConfig_xml();
-		}
 	}
 
 	return static_cast<int>(msg.wParam);

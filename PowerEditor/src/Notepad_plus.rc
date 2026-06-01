@@ -1349,14 +1349,6 @@ BEGIN
     BEGIN
         MENUITEM "Command Line Arguments...",      IDM_CMDLINEARGUMENTS
         MENUITEM SEPARATOR
-        MENUITEM "Notepad++ Home",                 IDM_HOMESWEETHOME
-        MENUITEM "Notepad++ Project Page",         IDM_PROJECTPAGE
-        MENUITEM "Notepad++ Online User Manual",   IDM_ONLINEDOCUMENT
-        MENUITEM "Notepad++ Community (Forum)",    IDM_FORUM
-        MENUITEM SEPARATOR
-        MENUITEM "Update Notepad++",               IDM_UPDATE_NPP
-        MENUITEM "Set Updater Proxy...",           IDM_CONFUPDATERPROXY
-        MENUITEM SEPARATOR
         MENUITEM "Debug Info...",                  IDM_DEBUGINFO
         MENUITEM "About Notepad++",                IDM_ABOUT
     END
@@ -1394,12 +1386,6 @@ BEGIN
     LTEXT           "bit",IDC_VERSION_BIT,160,25,140,11
     //LTEXT           "Author :",IDC_STATIC,21,45,31,8
     //LTEXT           "FREE UYGHUR",IDC_AUTHOR_NAME,70,32,70,8
-    //LTEXT           "Stand with Hong Kong",IDC_AUTHOR_NAME,70,32,80,8
-    //LTEXT           "pour Samuel Paty",IDC_AUTHOR_NAME,70,32,80,8
-    //LTEXT           "Boycott Beijing 2022",IDC_AUTHOR_NAME,85,38,80,8
-    //LTEXT           "Declare variables, not war",IDC_AUTHOR_NAME,85,38,100,8
-    //LTEXT           "Make Apps, not war",IDC_AUTHOR_NAME,85,38,100,8
-    //LTEXT           "Stand Up For Ukraine",IDC_AUTHOR_NAME,85,38,100,8
     //LTEXT           "Unhappy Users' Edition",IDC_AUTHOR_NAME,85,38,100,8
     //LTEXT           "Happy Users' Edition",IDC_AUTHOR_NAME,85,38,100,8
     //LTEXT           "I want to get a refund",IDC_HOME_ADDR,85,48,126,8

@@ -30,10 +30,6 @@
 
 //**********************************************************
 
-#define INFO_URL L"https://notepad-plus-plus.org/update/getDownloadUrl.php"
-#define FORCED_DOWNLOAD_DOMAIN L"https://github.com/notepad-plus-plus/notepad-plus-plus/"
-
-
 #ifndef IDC_STATIC
 #define IDC_STATIC    -1
 #endif

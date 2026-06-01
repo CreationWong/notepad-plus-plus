@@ -66,40 +66,6 @@ SectionGroup "Plugins" Plugins
 
 SectionGroupEnd
 
-${MementoSection} "Auto-Updater" AutoUpdater
-	${If} $noUpdater == "true"
-		Delete $INSTDIR\updater\*.*
-	${Else}
-		; libcurl.dll has been removed since WinGUp v5.4 (Notepad++ v8.9.1)
-		Delete "$INSTDIR\updater\libcurl.dll"
-
-		SetOverwrite on
-		SetOutPath "$INSTDIR\updater"
-!ifdef ARCH64
-		File "..\bin64\updater\GUP.exe"
-		File "..\bin64\updater\gup.xml"
-		File "..\bin64\updater\LICENSE"
-		File "..\bin64\updater\README.md"
-		File "..\bin64\updater\updater.ico"
-!else ifdef ARCHARM64
-		File "..\binarm64\updater\GUP.exe"
-		File "..\binarm64\updater\gup.xml"
-		File "..\binarm64\updater\LICENSE"
-		File "..\binarm64\updater\README.md"
-		File "..\binarm64\updater\updater.ico"
-!else
-		File "..\bin\updater\GUP.exe"
-		File "..\bin\updater\gup.xml"
-		File "..\bin\updater\LICENSE"
-		File "..\bin\updater\README.md"
-		File "..\bin\updater\updater.ico"
-!endif
-		SetOutPath "$PLUGINSDIR\gupLocalization"
-		File "..\bin\updater\translations\"
-	${EndIf}
-	
-${MementoSectionEnd}
-
 ${MementoSection} "Plugins Admin" PluginsAdmin
 	SetOverwrite on
 	SetOutPath $ALLUSERS_PLUGIN_CONF_PATH
@@ -156,30 +122,6 @@ SectionGroup un.Plugins
 	SectionEnd
 
 SectionGroupEnd
-
-Section un.AutoUpdater
-	Delete "$INSTDIR\updater\GUP.exe"
-	Delete "$INSTDIR\updater\libcurl.dll"
-	Delete "$INSTDIR\updater\gup.xml"
-	Delete "$INSTDIR\updater\License.txt"
-	Delete "$INSTDIR\updater\LICENSE"
-	Delete "$INSTDIR\updater\gpl.txt"
-	Delete "$INSTDIR\updater\readme.txt"
-	Delete "$INSTDIR\updater\README.md"
-	Delete "$INSTDIR\updater\updater.ico"
-	Delete "$INSTDIR\updater\getDownLoadUrl.php"
-	Delete "$INSTDIR\updater\nativeLang.xml"
-	RMDir "$INSTDIR\updater"
-SectionEnd
-
-Function .onSelChange
-${If} ${SectionIsSelected} ${PluginsAdmin}
-    !insertmacro SetSectionFlag ${AutoUpdater} ${SF_RO}
-    !insertmacro SelectSection ${AutoUpdater}
-${Else}
-    !insertmacro ClearSectionFlag ${AutoUpdater} ${SF_RO}
-${EndIf}
-FunctionEnd
 
 Section un.PluginsAdmin
 	Delete "$USER_PLUGIN_CONF_PATH\nppPluginList.dll" ; delete 7.6 version's left

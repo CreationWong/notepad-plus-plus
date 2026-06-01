@@ -814,14 +814,13 @@ struct NppGUI final
 	enum AutoUpdateMode { autoupdate_disabled, autoupdate_on_startup, autoupdate_on_exit };
 	struct AutoUpdateOptions
 	{
-		AutoUpdateMode _doAutoUpdate = autoupdate_on_startup;
+		AutoUpdateMode _doAutoUpdate = autoupdate_disabled;
 		int _intervalDays = 15;
 		Date _nextUpdateDate;
 		AutoUpdateOptions(): _nextUpdateDate(Date()) {}
 	}
 	_autoUpdateOpt;
 
-	bool _doesExistUpdater = false;
 	int _caretBlinkRate = 600;
 	int _caretWidth = 1;
 
@@ -1744,8 +1743,6 @@ public:
 	}
 	UINT getNbTabCompactLabelLen() const { return _nppGUI._tabCompactLabelLen; }
 
-	static void buildGupParams(std::wstring& params);
-
 private:
 	NppParameters();
 	~NppParameters();
@@ -1888,15 +1885,10 @@ private:
 
 	std::wstring _initialCloudChoice;
 
-	std::wstring _wingupFullPath;
-	std::wstring _wingupParams;
-	std::wstring _wingupDir;
-	bool _isElevationRequired = false;
 	bool _isAdminMode = false;
 
 	bool _isRegForOSAppRestartDisabled = false;
 	bool _doNppLogNetworkDriveIssue = false;
-	bool _isNppAutoUpdateDisabled = false;
 
 	bool _isEndSessionStarted = false;
 	bool _isEndSessionCritical = false;
@@ -1907,17 +1899,7 @@ private:
 	int _currentSystemCodepage = -1;
 
 public:
-	const std::wstring& getWingupFullPath() const { return _wingupFullPath; }
-	const std::wstring& getWingupParams() const { return _wingupParams; }
-	const std::wstring& getWingupDir() const { return _wingupDir; }
-	bool shouldDoUAC() const { return _isElevationRequired; }
-	void setWingupFullPath(const std::wstring& val2set) { _wingupFullPath = val2set; }
-	void setWingupParams(const std::wstring& val2set) { _wingupParams = val2set; }
-	void setWingupDir(const std::wstring& val2set) { _wingupDir = val2set; }
-	void setElevationRequired(bool val2set) { _isElevationRequired = val2set; }
-
 	bool doNppLogNetworkDriveIssue() const { return _doNppLogNetworkDriveIssue; }
-	bool isNppAutoUpdateDisabled() const { return _isNppAutoUpdateDisabled; }
 
 	void endSessionStart() { _isEndSessionStarted = true; }
 	bool isEndSessionStarted() const { return _isEndSessionStarted; }

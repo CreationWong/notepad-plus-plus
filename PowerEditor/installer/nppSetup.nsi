@@ -99,7 +99,6 @@ page Custom ExtraOptions
 !insertmacro MUI_UNPAGE_INSTFILES
 
 Var diffArchDir2Remove
-Var noUpdater
 Var closeRunningNpp
 Var runNppAfterSilentInstall
 Var relaunchNppAfterSilentInstall
@@ -186,28 +185,9 @@ nppNotRunning:
 notInSilentMode:
 	; End of "/closeRunningNpp"
 
-	; Begin of "/noUpdater"
-	${GetParameters} $R0 
-	${GetOptions} $R0 "/noUpdater" $R1 ;case insensitive 
-	IfErrors withUpdater withoutUpdater
-withUpdater:
-	StrCpy $noUpdater "false"
-	Goto updaterDone
-withoutUpdater:
-	StrCpy $noUpdater "true"
-updaterDone:
-
-	${If} $noUpdater == "true"
-		!insertmacro UnSelectSection ${AutoUpdater}
-		SectionSetText ${AutoUpdater} ""
-		!insertmacro UnSelectSection ${PluginsAdmin}
-		SectionSetText ${PluginsAdmin} ""
-	${EndIf}
-	; End of "/noUpdater"
-
 	; Begin of "/runNppAfterSilentInstall"
-	${GetParameters} $R0 
-	${GetOptions} $R0 "/runNppAfterSilentInstall" $R1 ;case insensitive 
+	${GetParameters} $R0
+	${GetOptions} $R0 "/runNppAfterSilentInstall" $R1 ;case insensitive
 	IfErrors noRunNpp runNpp
 noRunNpp:
 	StrCpy $runNppAfterSilentInstall "false"
@@ -228,13 +208,6 @@ relaunchNpp:
 	StrCpy $relaunchNppAfterSilentInstall "true"
 relaunchNppDone:
 	; End of "/relaunchNppAfterSilentInstall"
-
-	${If} ${SectionIsSelected} ${PluginsAdmin}
-		!insertmacro SetSectionFlag ${AutoUpdater} ${SF_RO}
-		!insertmacro SelectSection ${AutoUpdater}
-	${Else}
-		!insertmacro ClearSectionFlag ${AutoUpdater} ${SF_RO}
-	${EndIf}
 
 	Call SetRoughEstimation		; This is rough estimation of files present in function copyCommonFiles
 	InitPluginsDir			; Initializes the plug-ins dir ($PLUGINSDIR) if not already initialized.
@@ -422,8 +395,7 @@ FunctionEnd
     !insertmacro MUI_DESCRIPTION_TEXT ${Converter} 'Convert ASCII to binary, octal, hexadecimal and decimal string.'
     !insertmacro MUI_DESCRIPTION_TEXT ${localization} 'To use Notepad++ in your favorite language(s), install all/desired language(s).'
     !insertmacro MUI_DESCRIPTION_TEXT ${Themes} 'The eye-candy to change visual effects. Use Theme selector to switch among them.'
-    !insertmacro MUI_DESCRIPTION_TEXT ${AutoUpdater} 'Keep Notepad++ updated: Automatically download and install the latest updates.'
-    !insertmacro MUI_DESCRIPTION_TEXT ${PluginsAdmin} 'Install, Update and Remove any plugin from a list by some clicks. It needs Auto-Updater installed.'
+    !insertmacro MUI_DESCRIPTION_TEXT ${PluginsAdmin} 'Install the plugin catalog metadata used by Plugins Admin.'
   !insertmacro MUI_FUNCTION_DESCRIPTION_END
 ;--------------------------------
 

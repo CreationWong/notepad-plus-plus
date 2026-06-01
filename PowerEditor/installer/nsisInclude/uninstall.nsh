@@ -48,7 +48,6 @@ Function un.onUninstSuccess
 	RMDir "$INSTDIR\plugins\APIs\"
 	RMDir "$INSTDIR\plugins\disabled\"
 	RMDir "$INSTDIR\plugins\"
-	RMDir "$INSTDIR\updater\"
 	RMDir "$INSTDIR\autoCompletion\"
 	RMDir "$INSTDIR\functionList\"
 	RMDir "$INSTDIR\themes\"

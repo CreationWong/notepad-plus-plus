@@ -60,7 +60,6 @@
 #include "menuCmdID.h"
 #include "resource.h"
 #include "shortcut.h"
-#include "verifySignedfile.h"
 #include "hmac.h"
 
 #ifdef _MSC_VER
@@ -493,18 +492,6 @@ static constexpr WinMenuKeyDefinition winKeyDefs[]
 	{ VK_NULL,    IDM_WINDOW_SORT_FS_DSC,                       false, false, false, L"Sort by Content Length Descending" },
 
 	{ VK_NULL,    IDM_CMDLINEARGUMENTS,                         false, false, false, nullptr },
-	{ VK_NULL,    IDM_HOMESWEETHOME,                            false, false, false, nullptr },
-	{ VK_NULL,    IDM_PROJECTPAGE,                              false, false, false, nullptr },
-	{ VK_NULL,    IDM_ONLINEDOCUMENT,                           false, false, false, nullptr },
-	{ VK_NULL,    IDM_FORUM,                                    false, false, false, nullptr },
-//	{ VK_NULL,    IDM_ONLINESUPPORT,                            false, false, false, nullptr },
-//	{ VK_NULL,    IDM_PLUGINSHOME,                              false, false, false, nullptr },
-
-	// The following two commands are not in menu if (nppGUI._doesExistUpdater == 0).
-	// They cannot be derived from menu then, only for this reason the text is specified here.
-	// In localized environments, the text comes preferably from xml Menu/Main/Commands.
-	{ VK_NULL,    IDM_UPDATE_NPP,                               false, false, false, L"Update Notepad++" },
-	{ VK_NULL,    IDM_CONFUPDATERPROXY,                         false, false, false, L"Set Updater Proxy..." },
 	{ VK_NULL,    IDM_DEBUGINFO,                                false, false, false, nullptr },
 	{ VK_F1,      IDM_ABOUT,                                    false, false, false, nullptr }
 };
@@ -1352,8 +1339,6 @@ bool NppParameters::load()
 		if (!doesDirectoryExist(_userPluginConfDir.c_str()))
 			::CreateDirectory(_userPluginConfDir.c_str(), NULL);
 
-		// For PluginAdmin to launch the wingup with UAC
-		setElevationRequired(true);
 	}
 
 	_pluginConfDir = _pluginRootDir; // for plugin list home
@@ -1859,16 +1844,6 @@ bool NppParameters::load()
 		pathAppend(filePath, noRegForOSAppRestartTrigger);
 		_isRegForOSAppRestartDisabled = doesFileExist(filePath.c_str());
 	}
-
-	//-------------------------------------------------------------//
-	// disableNppAutoUpdate.xml                                    //
-	// This empty xml file is optional. If it exists, auto-update  //
-	// will be disabled, even though WinGUp is present.            //
-	//-------------------------------------------------------------//
-	filePath = _nppPath;
-	std::wstring disableNppAutoUpdateFileName = L"disableNppAutoUpdate.xml";
-	pathAppend(filePath, disableNppAutoUpdateFileName);
-	_isNppAutoUpdateDisabled = doesFileExist(filePath.c_str());
 
 	return isAllLoaded;
 }
@@ -8926,58 +8901,4 @@ LanguageNameInfo NppParameters::getLangNameInfoFromNameID(const std::wstring& la
 			return lnf;
 	}
 	return LanguageNameInfo{};
-}
-
-void NppParameters::buildGupParams(std::wstring& params)
-{
-	params = L"-v";
-	params += VERSION_INTERNAL_VALUE;
-	static constexpr int archType64 = NppParameters::archType();
-	if constexpr (archType64 == IMAGE_FILE_MACHINE_AMD64)
-	{
-		params += L" -px64";
-	}
-	else if constexpr (archType64 == IMAGE_FILE_MACHINE_ARM64)
-	{
-		params += L" -parm64";
-	}
-
-	params += L" -infoUrl=";
-	params += INFO_URL;
-
-	params += L" -forceDomain=";
-	params += FORCED_DOWNLOAD_DOMAIN;
-
-	SecurityGuard sgd;
-
-	//
-	// Verify integrity & authenticiy of server-returned XML (XMLDsig) 
-	//
-
-	params += L" -chkCert4InfoXML";
-
-	params += L" -chkCertKeyId4XML=";
-	params += sgd.signer_key_id();
-
-	//
-	// Verify integrity & authenticiy of the downloaded installer
-	//
-
-	params += L" -chkCertSig=yes";
-
-	params += L" -chkCertRevoc";
-	params += L" -chkCertTrustChain";
-
-	params += L" -chkCertName=";
-	params += sgd.signer_display_name();
-
-	params += L" -chkCertSubject=\"";
-	params += stringReplace(sgd.signer_subject(), L"\"", L"{QUOTE}");
-	params += L"\"";
-
-	params += L" -chkCertKeyId=";
-	params += sgd.signer_key_id();
-
-	params += L" -errLogPath=";
-	params += L"\"%LOCALAPPDATA%\\Notepad++\\log\\securityError.log\"";
 }

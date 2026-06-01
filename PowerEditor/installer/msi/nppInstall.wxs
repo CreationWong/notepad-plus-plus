@@ -34,7 +34,6 @@
 		<StandardDirectory Id="ProgramFiles64Folder">
 			<Directory Id="INSTALLFOLDER" Name="Notepad++">
 				<Directory Id="ContextMenuFolder" Name="contextMenu" />
-				<Directory Id="UpdaterFolder" Name="updater" />
 				<Directory Id="AutoCompletionFolder" Name="autoCompletion" />
 
 				<Directory Id="PluginsFolder" Name="plugins" >
@@ -113,11 +112,6 @@
 
 			<ComponentGroupRef Id="ShortcutComponentGroup" />
 			<ComponentGroupRef Id="ContextMenuComponentGroup" />
-
-			<Feature Id="AutoUpdaterFeature" Title="Auto Updater" Level="1">
-				<ComponentGroupRef Id="AutoUpdatorComponentGroup" />
-				<Level Value="0" Condition="NOUPDATER" />
-			</Feature>
 
 			<ComponentGroupRef Id="PluginAdminComponentGroup" />
 			<ComponentGroupRef Id="PluginMimeToolsComponentGroup" />
