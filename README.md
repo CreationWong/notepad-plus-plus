@@ -1,31 +1,36 @@
 What is Notepad++ ?
 ===================
 
-[![GitHub release](https://img.shields.io/github/release/notepad-plus-plus/notepad-plus-plus.svg)](../../releases/latest)&nbsp;&nbsp;&nbsp;&nbsp;[![Build Status](https://img.shields.io/github/actions/workflow/status/notepad-plus-plus/notepad-plus-plus/CI_build.yml)](https://github.com/notepad-plus-plus/notepad-plus-plus/actions/workflows/CI_build.yml)
-&nbsp;&nbsp;&nbsp;&nbsp;[![Join the discussions at https://community.notepad-plus-plus.org/](https://notepad-plus-plus.org/assets/images/NppCommunityBadge.svg)](https://community.notepad-plus-plus.org/)
+<img align="middle" src="./assets/Npp.gif" style="zoom:50%;" />
 
-Notepad++ is a free (free as in both "free speech" and "free beer") source code
+[![GitHub release](https://img.shields.io/github/release/notepad-plus-plus/notepad-plus-plus.svg)](../../releases/latest)&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;
+
+**Notepad++** is a free (free as in both "free speech" and "free beer") source code
 editor and Notepad replacement that supports several programming languages and
 natural languages. Running in the MS Windows environment, its use is governed by
 [GPL License](LICENSE).
 
-See the [Notepad++ official site](https://notepad-plus-plus.org/) for more information.
+This is an official repository-based modified version under the [GPL License](LICENSE), aimed at removing political content, forced auto-updates, and website associations from the original repository. It restores users' freedom to use the software as they choose!
 
+## About This Repository
 
-Notepad++ GPG Release Key
--------------------------
-_Since the release of version 7.6.5 Notepad++ is signed using GPG with the following key:_
+This is a modified version based on the official repository, released under the [GPL License](LICENSE). The purpose of this fork is to remove political content, forced auto-updates, and unnecessary website dependencies from the original codebase.
 
-- **Signer:** Notepad++
-- **E-mail:** don.h@free.fr
-- **Key ID:** 0x8D84F46E
-- **Key fingerprint:** 14BC E436 2749 B2B5 1F8C 7122 6C42 9F1D 8D84 F46E
-- **Key type:** RSA 4096/4096
-- **Created:** 2019-03-11
-- **Expires:** 2027-03-13
+Due to the increasingly extreme political stance of the original developer, Don Ho, we have reviewed the repository, removed objectionable code, and submitted a cleaner version. Our goal is to restore users' freedom to use the software without ideological interference!
 
-https://github.com/notepad-plus-plus/notepad-plus-plus/blob/master/nppGpgPub.asc
+### Important Note
 
+If you prefer the official version of Notepad++, please visit:
+https://github.com/notepad-plus-plus/notepad-plus-plus
+
+This repository is forked from the official source but **will not be synchronized** with upstream updates.
+
+#### Bug Reporting Guidelines
+
+- Please submit any issues encountered with this modified version **only in this repository**
+- Do **not** report these issues to the official repository until the root cause has been confirmed
+- Clearly indicate you're using this modified fork when creating issues
 
 Supported OS
 ------------
@@ -33,18 +38,21 @@ Supported OS
 All the Windows systems still supported by Microsoft are supported by Notepad++. However, not all Notepad++ users can or want to use the newest system. Here is the [Supported systems information](SUPPORTED_SYSTEM.md) you may need in case you are one of them.
 
 
-
-
 Build Notepad++
 ---------------
 
 Please follow [build guide](BUILD.md) to build Notepad++ from source.
 
+## Open-Source Components Used
+
+This project utilizes the following open-source code:
+
+- **Scintilla** - The foundational editing component
+- **Lexilla** - Infrastructure ([GitHub](https://github.com/ScintillaOrg/lexilla))
 
 Contribution
 ------------
 
 Contributions are welcome. Be mindful of our [Contribution Rules](CONTRIBUTING.md) to increase the likelihood of your contribution getting accepted.
 
-[Notepad++ Contributors](https://github.com/notepad-plus-plus/notepad-plus-plus/graphs/contributors)
-
+**Notepad++** thrives on community contributions! Our deepest gratitude to every developer who has contributed!
