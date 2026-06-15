@@ -74,7 +74,6 @@
 #include "sha512.h"
 #include "shortcut.h"
 #include "trayIconControler.h"
-#include "verifySignedfile.h"
 
 using namespace std;
 
